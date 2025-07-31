@@ -2,8 +2,6 @@
 
 <div align="center">
 
-# LazyDS4
-
 ### _Direct DualShock 4 to XInput Mapper for Windows_
 
 [![Build Status](https://img.shields.io/badge/build-Stable-blue?style=for-the-badge)](#)
