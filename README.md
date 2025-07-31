@@ -30,8 +30,8 @@ Get the latest stable release from any of the following platforms:
 <table>
   <tr>
     <td align="center" width="33%">
-      <a href="https://sourceforge.net/p/LazyDS4/">
-        <img alt="Download Warlock-Studio" src="https://sourceforge.net/sflogo.php?type=18&amp;group_id=3880091" width="200">
+      <a href="https://sourceforge.net/p/lazyds4/">
+        <img alt="Download LazyDS4" src="https://sourceforge.net/sflogo.php?type=18&amp;group_id=3898336" width=200></a>
       </a>
     </td>
     <td align="center" width="33%">
