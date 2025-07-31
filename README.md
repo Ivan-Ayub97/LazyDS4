@@ -1,4 +1,4 @@
-![LazyDS4 Banner](assets/icon.png)
+![LazyDS4 Banner](rsc/banner.png)
 
 <div align="center">
 
