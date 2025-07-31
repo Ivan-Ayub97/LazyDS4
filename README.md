@@ -9,7 +9,7 @@
 [![Build Status](https://img.shields.io/badge/build-Stable-blue?style=for-the-badge)](#)
 [![Version](https://img.shields.io/badge/Version-v1.0.0-darkred?style=for-the-badge)](#)
 [![License](https://img.shields.io/badge/License-MIT-purple?style=for-the-badge)](LICENSE)
-[![Downloads](https://img.shields.io/github/downloads/Ivan-Ayub97/LazyDS4/total?style=for-the-badge&color=gold)]([https://github.com/Ivan-Ayub97/LazyDS4/release](https://github.com/Ivan-Ayub97/LazyDS4/releases/tag/v1.0.0))
+[![Downloads](https://img.shields.io/github/downloads/Ivan-Ayub97/LazyDS4/total?style=for-the-badge&color=gold)](https://github.com/Ivan-Ayub97/LazyDS4/releases/tag/v1.0.0)
 
 _"Transform your DualShock 4 into a native Xbox 360 controller"_
 
