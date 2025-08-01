@@ -133,6 +133,7 @@ Get the latest stable release from any of the following platforms:
 | PS Button       | Guide        | Xbox Home     |
 
 ---
+</div>
 
 ## 💾 Project Structure
 
@@ -156,7 +157,7 @@ LazyDS4/
 ├── Setup.iss                  # Inno Setup script
 └── requirements.txt           # Python dependencies
 ```
-
+<div align="center">
 ---
 
 ## 📋 System Requirements
@@ -206,7 +207,7 @@ Distributed under the MIT License. See `LICENSE` for more details.
 ---
 
 ## 🔧 Development and Compilation
-</div>
+
 ### For Developers
 
 ```bash
@@ -223,7 +224,6 @@ python LazyDS4.py
 # Build executable
 python build.py
 ```
-<div align="center">
 ### Included Scripts
 
 - **`build.py`**: Automated build with PyInstaller
