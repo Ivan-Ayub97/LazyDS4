@@ -15,7 +15,8 @@ _"Transform your DualShock 4 into a native Xbox 360 controller"_
 
 ---
 
-[LazyDS4 Control Play](https://youtu.be/aLHNKTKF1G8)
+[LazyDS4 Control Play](https://img.youtube.com/vi/aLHNKTKF1G8/hqdefault.jpg)](https://youtu.be/aLHNKTKF1G8)
+
 
 
 ---
