@@ -11,7 +11,6 @@
 
 _"Transform your DualShock 4 into a native Xbox 360 controller"_
 
-</div>
 
 ---
 
@@ -234,3 +233,4 @@ python build.py
 ---
 
 **Built by the lazy, for the lazy.**
+</div>
