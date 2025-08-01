@@ -212,18 +212,18 @@ Distributed under the MIT License. See `LICENSE` for more details.
 ### For Developers
 
 ```bash
-# Clone repository
-git clone https://github.com/Ivan-Ayub97/LazyDS4.git
-cd LazyDS4
+       # Clone repository
+       git clone https://github.com/Ivan-Ayub97/LazyDS4.git
+       cd LazyDS4
 
-# Install dependencies
-pip install -r requirements.txt
+       # Install dependencies
+       pip install -r requirements.txt
 
-# Run in development mode
-python LazyDS4.py
+       # Run in development mode
+       python LazyDS4.py
 
-# Build executable
-python build.py
+       # Build executable
+       python build.py
 ```
 ### Included Scripts
 
