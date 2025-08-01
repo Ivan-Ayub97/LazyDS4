@@ -206,7 +206,7 @@ Distributed under the MIT License. See `LICENSE` for more details.
 ---
 
 ## 🔧 Development and Compilation
-
+</div>
 ### For Developers
 
 ```bash
@@ -223,7 +223,7 @@ python LazyDS4.py
 # Build executable
 python build.py
 ```
-
+<div align="center">
 ### Included Scripts
 
 - **`build.py`**: Automated build with PyInstaller
