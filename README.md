@@ -17,9 +17,6 @@ _"Transform your DualShock 4 into a native Xbox 360 controller"_
 
 ![LazyDS4 Control Play](rsc/LazyDS4_Control.gif)
 
-
-
-
 ---
 ## 🧩 Description
 
