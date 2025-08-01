@@ -2,8 +2,8 @@
 ; Enhanced version with better ViGEmBus integration and modern features
 
 #define AppName "LazyDS4"
-#define AppVersion "1.0.0"
-#define AppVersionShort "1.0"
+#define AppVersion "2.0.0"
+#define AppVersionShort "2.0"
 #define AppPublisher "Iván Eduardo Chavez Ayub"
 #define AppURL "https://github.com/Ivan-Ayub97/LazyDS4"
 #define AppExeName "LazyDS4.exe"

@@ -5,21 +5,21 @@
 ### _Direct DualShock 4 to XInput Mapper for Windows_
 
 [![Build Status](https://img.shields.io/badge/build-Stable-blue?style=for-the-badge)](#)
-[![Version](https://img.shields.io/badge/Version-v1.0.0-darkred?style=for-the-badge)](#)
+[![Version](https://img.shields.io/badge/Version-v2.0.0-darkred?style=for-the-badge)](#)
 [![License](https://img.shields.io/badge/License-MIT-purple?style=for-the-badge)](LICENSE)
 [![Downloads](https://img.shields.io/github/downloads/Ivan-Ayub97/LazyDS4/total?style=for-the-badge&color=gold)](https://github.com/Ivan-Ayub97/LazyDS4/releases/tag/v1.0.0)
 
 _"Transform your DualShock 4 into a native Xbox 360 controller"_
-
 
 ---
 
 ![LazyDS4](rsc/lazyds4.gif)
 
 ---
+
 ## 🧩 Description
 
-**LazyDS4** is a controller mapping application designed to convert HID input from a DualShock 4 controller directly to a virtual Xbox 360 controller. Optimized for simplicity and performance, it offers real-time input mapping with a ~1ms (1000Hz) polling rate, modern graphical interface with PyQt5, and automatic joystick calibration.
+**LazyDS4** is a controller mapping application designed to convert HID input from a DualShock 4 controller directly to a virtual Xbox 360 controller. Optimized for simplicity and performance, it offers real-time input mapping with a ~1ms (1000Hz) polling rate, modern graphical interface with PyQt5, intelligent drift detection, and enhanced joystick calibration with adaptive algorithms.
 
 ---
 
@@ -44,7 +44,7 @@ Get the latest stable release from any of the following platforms:
 
 ### Quick Installation
 
-1. Download the installer `LazyDS4-1.0.0-Installer.exe`
+1. Download the installer `LazyDS4-2.0.0-Installer.exe`
 2. Run as administrator (required for ViGEmBus)
 3. Installer will automatically setup ViGEmBus driver
 4. Launch LazyDS4 from start menu or shortcut
@@ -71,7 +71,7 @@ Get the latest stable release from any of the following platforms:
 
 - **Info Tab**: Developer information, button mapping, and utilities
 
-![Screenshot](rsc/Capture4.png)
+![Screenshot](rsc/Capture4.gif)
 
 - **Calibration Dialog**: Interactive tool to adjust joysticks
 
@@ -82,24 +82,24 @@ Get the latest stable release from any of the following platforms:
 - ✅ **Direct HID to XInput Mapping** — Optimized real-time translation
 - ✅ **USB and Bluetooth Connection** — Complete support for DS4 v1 and v2
 - ✅ **1000Hz Polling Rate** — Ultra-fast response of ~1ms
+- 🎯 **Smart Drift Detection** — Automatic detection with visual alerts and severity analysis
 - 🎨 **Modern Interface** with dark theme design and visual effects
 - 🔋 **Battery Monitor** with low battery alerts and charging status
-- 🎯 **Joystick Calibration** with customizable deadzone settings
+- 🎯 **Enhanced Joystick Calibration** with adaptive deadzone and drift correction
 - 🔧 **Automatic ViGEmBus Installation** and driver management
 - 📱 **Integrated Bluetooth Pairing Assistant**
 - 🎮 **Interactive Controller Visualization** in real-time
 
 ---
 
-## 📌 What's New (v1.0.0)
+## 📌 What's New (v2.0.0)
 
-- 🆕 Full implementation of DS4 to XInput mapping
-- 🔋 Battery monitoring system with visual alerts
-- 🎯 Integrated joystick calibration tool
-- 📱 Bluetooth pairing assistant with PowerShell
-- 🎨 Modern graphical interface with dark theme and effects
-- 🔧 Automatic ViGEmBus driver installation
-- ⚡ Performance optimization with 1000Hz polling
+- 🆕 **Intelligent Drift Detection** — Automatic detection of joystick drift with visual warnings
+- 🎯 **Enhanced Calibration System** — Improved calibration with adaptive deadzone and complex algorithms
+- 🔔 **Smart Drift Alerts** — Color-coded severity indicators and blinking calibration button
+- 📊 **Real-time Joystick Visualization** — Enhanced visual feedback during calibration
+- 🧠 **Advanced Drift Analysis** — Multi-axis drift detection with severity classification
+- ⚡ **Improved Input Processing** — Better normalization and smoother controller response
 
 ---
 
@@ -135,6 +135,7 @@ Get the latest stable release from any of the following platforms:
 ---
 
 ## 💾 Project Structure
+
 </div>
 
 ```
@@ -157,8 +158,9 @@ LazyDS4/
 ├── Setup.iss                  # Inno Setup script
 └── requirements.txt           # Python dependencies
 ```
+
 <div align="center">
-  
+
 ---
 
 ## 📋 System Requirements
@@ -225,6 +227,7 @@ Distributed under the MIT License. See `LICENSE` for more details.
        # Build executable
        python build.py
 ```
+
 ### Included Scripts
 
 - **`build.py`**: Automated build with PyInstaller
@@ -234,4 +237,5 @@ Distributed under the MIT License. See `LICENSE` for more details.
 ---
 
 **Built by the lazy, for the lazy.**
+
 </div>

@@ -52,6 +52,7 @@ class LazyDS4(QObject):
     controller_info_updated = pyqtSignal(dict)
     input_received = pyqtSignal(object)
     battery_status_updated = pyqtSignal(int, bool)  # level, is_charging
+    drift_detected = pyqtSignal(dict)  # Relay drift detection signal
 
     def __init__(self):
         super().__init__()
@@ -122,6 +123,8 @@ class LazyDS4(QObject):
                 self.controller_info_updated.emit(self.ds4.get_device_info())
                 self.translator.battery_status_updated.connect(
                     self.battery_status_updated)
+                # Connect drift detection signal
+                self.translator.drift_detected.connect(self._on_drift_detected)
         except Exception as e:
             self.log_updated.emit(f"Controller search failed: {e}")
             time.sleep(5)  # Wait before retrying
@@ -153,6 +156,10 @@ class LazyDS4(QObject):
             self.log_updated.emit(f"[ERROR] Input processing error: {e}")
             # Propagate as a connection error
             raise ConnectionError("Failed to process controller input.")
+    
+    def _on_drift_detected(self, drift_info):
+        """Relay drift detection signal from translator to main window"""
+        self.drift_detected.emit(drift_info)
 
 
 def main():
@@ -185,6 +192,9 @@ def main():
     lazy_ds4_app.battery_status_updated.connect(main_win.update_battery_status)
     main_win.battery_widget.battery_low_warning.connect(
         main_win.show_battery_warning)
+    
+    # Connect drift detection signal
+    lazy_ds4_app.drift_detected.connect(main_win.on_drift_detected)
 
     # Show the window and run the app
     main_win.show()
