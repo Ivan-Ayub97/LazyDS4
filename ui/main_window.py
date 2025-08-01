@@ -38,7 +38,7 @@ class MainWindow(QMainWindow):
     def __init__(self, app_instance):
         super().__init__()
         self.app = app_instance
-        self.setWindowTitle("LazyDS4")
+        self.setWindowTitle("LazyDS4 2.0")
         self.setGeometry(100, 100, 600, 400)
         self.setWindowIcon(QIcon(resource_path("assets/icon.ico")))
 
@@ -158,8 +158,40 @@ class MainWindow(QMainWindow):
         self._add_button_shadow(self.calibrate_button)
         button_layout.addWidget(self.calibrate_button)
 
+        # Drift warning elements (initially hidden)
+        self.drift_warning_label = QLabel("⚠️ Stick drift detected! Calibration recommended.")
+        self.drift_warning_label.setFont(QFont("Segoe UI", 9, QFont.Bold))
+        self.drift_warning_label.setAlignment(Qt.AlignCenter)
+        self.drift_warning_label.setVisible(False)
+        self.drift_warning_label.setStyleSheet("""
+            QLabel {
+                background-color: rgba(255, 152, 0, 0.15);
+                border: 2px solid #ff9800;
+                border-radius: 8px;
+                padding: 8px;
+                color: #ff9800;
+                margin: 4px;
+            }
+        """)
+
         control_layout.addLayout(button_layout)
+
+        # Add drift warning below buttons (initially hidden)
+        control_layout.addWidget(self.drift_warning_label)
+
         control_layout.addStretch()
+
+        # Initialize drift detection features
+        self.drift_blink_timer = QTimer()
+        self.drift_blink_timer.timeout.connect(self._blink_calibration_button)
+        self.drift_blink_state = False
+        self.drift_detected = False
+
+        # Add test button for drift detection (temporary for testing)
+        test_drift_button = QPushButton("🧪 Test Drift Detection")
+        test_drift_button.setFont(QFont("Segoe UI", 8))
+        test_drift_button.clicked.connect(self._test_drift_detection)
+        control_layout.addWidget(test_drift_button)
 
         self.tabs.addTab(control_tab, "Controller")
 
@@ -575,65 +607,111 @@ Button Mapping:
 
     def _on_pair_clicked(self):
         """Handle pair controller button click"""
-        self.append_log("[INFO] Starting Bluetooth device discovery...")
+        self.append_log("[INFO] Attempting to auto-pair with a Bluetooth controller...")
         QApplication.setOverrideCursor(Qt.WaitCursor)
 
-        # Discover devices (this might take a moment)
         try:
             from utils.bluetooth_manager import BluetoothManager
             bt_manager = BluetoothManager()
-            devices = bt_manager.discover_devices()
+
+            # Attempt auto pairing with DS4 controller
+            if bt_manager.auto_pair_controller():
+                self.append_log("[SUCCESS] Paired with a Bluetooth controller!")
+                QMessageBox.information(self, "Pairing Successful",
+                                        "A Bluetooth controller has been paired successfully.")
+            else:
+                self.append_log("[INFO] No available controllers found for pairing.")
+                QMessageBox.warning(self, "Pairing Failed",
+                                    "Could not find or pair any new controllers.")
         except Exception as e:
-            self.append_log(f"[ERROR] Failed to scan for devices: {e}")
-            devices = []
+            self.append_log(f"[ERROR] Failed to pair with device: {e}")
 
         QApplication.restoreOverrideCursor()
 
-        if not devices:
-            QMessageBox.information(self, "No Devices Found",
-                                    "Could not find any new controllers in pairing mode.\n"
-                                    "Please ensure your controller is flashing its light bar.")
-            return
-
-        # Show pairing dialog
-        dialog = PairingDialog(devices, self)
-        dialog.pair_device_requested.connect(self._on_pair_device_requested)
-        dialog.exec_()
-
     def _on_reinstall_vigem(self):
         """Handle the reinstall ViGEmBus button click"""
-        self.append_log("[INFO] Starting manual ViGEmBus reinstallation...")
-        QApplication.setOverrideCursor(Qt.WaitCursor)
+        # Show information dialog first
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setWindowTitle("ViGEmBus Driver Installation")
+        msg.setText("Installing ViGEmBus Driver")
+        msg.setInformativeText(
+            "The ViGEmBus installer will now launch. You will need to:\n\n"
+            "1. Accept the UAC prompt (Administrator privileges required)\n"
+            "2. Accept the license agreement in the installer\n"
+            "3. Follow the installation wizard\n\n"
+            "Click OK to continue."
+        )
+        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        msg.setDefaultButton(QMessageBox.Ok)
+
+        # Apply dark theme to message box
+        msg.setStyleSheet("""
+            QMessageBox {
+                background-color: #2E2F30;
+                color: #F0F0F0;
+            }
+            QMessageBox QPushButton {
+                background-color: #4A4B4C;
+                color: #F0F0F0;
+                border: 1px solid #6A6B6C;
+                padding: 5px 15px;
+                min-width: 60px;
+            }
+            QMessageBox QPushButton:hover {
+                background-color: #6A6B6C;
+            }
+        """)
+
+        if msg.exec_() != QMessageBox.Ok:
+            return
+
+        self.append_log("[INFO] Starting ViGEmBus driver installation...")
 
         try:
             from utils.vigem_setup import ViGEmSetup
             vigem_setup = ViGEmSetup()
 
             # Stop the service if it's running
-            if self.app.running:
+            if self.app.running.is_set():
                 self.app.stop()
                 self.start_button.setEnabled(True)
                 self.stop_button.setEnabled(False)
                 self.append_log(
-                    "[INFO] Service stopped for driver reinstallation.")
+                    "[INFO] Service stopped for driver installation.")
 
-            success = vigem_setup.force_reinstall_vigem()
-            QApplication.restoreOverrideCursor()
+            # Launch the installer (non-blocking)
+            success = vigem_setup.install_vigem(silent=False)
 
             if success:
                 self.append_log(
-                    "[SUCCESS] ViGEmBus driver reinstalled successfully.")
-                QMessageBox.information(self, "Reinstallation Successful",
-                                        "The ViGEmBus driver has been reinstalled successfully. You can now start the service.")
+                    "[INFO] ViGEmBus installer launched. Please complete the installation process.")
+
+                # Show follow-up message
+                follow_up = QMessageBox()
+                follow_up.setIcon(QMessageBox.Information)
+                follow_up.setWindowTitle("Installation In Progress")
+                follow_up.setText("ViGEmBus Installer Launched")
+                follow_up.setInformativeText(
+                    "The ViGEmBus installer is now running. After completing the installation:\n\n"
+                    "1. Close the installer window\n"
+                    "2. Restart LazyDS4 if needed\n"
+                    "3. Try starting the service again\n\n"
+                    "The installation may take a few minutes to complete."
+                )
+                follow_up.setStyleSheet(msg.styleSheet())  # Use same dark theme
+                follow_up.exec_()
+
             else:
                 self.append_log(
-                    "[ERROR] ViGEmBus reinstallation failed. Check the log for details.")
-                QMessageBox.critical(self, "Reinstallation Failed",
-                                     "Failed to reinstall the ViGEmBus driver. Please try running as an administrator. Check the logs for more details.")
+                    "[ERROR] Failed to launch ViGEmBus installer. Check the log for details.")
+                QMessageBox.critical(self, "Installation Failed",
+                                     "Failed to launch the ViGEmBus installer. Please try running LazyDS4 as an administrator or install ViGEmBus manually from the assets folder.")
         except Exception as e:
-            QApplication.restoreOverrideCursor()
             self.append_log(
-                f"[ERROR] An unexpected error occurred during reinstallation: {e}")
+                f"[ERROR] An unexpected error occurred during installation: {e}")
+            QMessageBox.critical(self, "Installation Error",
+                                f"An error occurred while trying to install ViGEmBus: {str(e)}")
 
     def _on_pair_device_requested(self, device_address):
         """Handle pairing request from dialog"""
@@ -683,6 +761,11 @@ Button Mapping:
             calibration_dialog.update_calibration_data
         )
 
+        # Connect real-time joystick data to visualization widget
+        self.app.translator.joystick_data_updated.connect(
+            calibration_dialog.controller_viz.update_joystick_data
+        )
+
         # Show the dialog
         result = calibration_dialog.exec_()
 
@@ -691,3 +774,121 @@ Button Mapping:
                 "[SUCCESS] Controller calibration completed and applied.")
         else:
             self.append_log("[INFO] Controller calibration cancelled.")
+
+    def on_drift_detected(self, drift_info):
+        """Handle drift detection signal from input translator"""
+        has_drift = drift_info.get('has_drift', False)
+        drift_axes = drift_info.get('drift_axes', [])
+        severity = drift_info.get('severity', 'none')
+
+        if has_drift:
+            self.drift_detected = True
+            axes_text = ', '.join(drift_axes)
+
+            # Update warning label with specific information
+            self.drift_warning_label.setText(
+                f"⚠️ Stick drift detected on {axes_text}! Calibration recommended."
+            )
+
+            # Show warning and start blinking
+            self.drift_warning_label.setVisible(True)
+            self._start_calibration_button_blink()
+
+            # Log the drift detection
+            self.append_log(
+                f"[DRIFT DETECTED] Stick drift found on {axes_text} ({severity} severity). "
+                "Consider running calibration to fix this issue."
+            )
+
+            # Update warning color based on severity
+            self._update_drift_warning_color(severity)
+        else:
+            # No drift detected
+            self.drift_detected = False
+            self.drift_warning_label.setVisible(False)
+            self._stop_calibration_button_blink()
+
+    def _start_calibration_button_blink(self):
+        """Start blinking the calibration button to draw attention"""
+        if not self.drift_blink_timer.isActive():
+            self.drift_blink_timer.start(800)  # Blink every 800ms
+
+    def _stop_calibration_button_blink(self):
+        """Stop blinking the calibration button"""
+        if self.drift_blink_timer.isActive():
+            self.drift_blink_timer.stop()
+            self.drift_blink_state = False
+            self._reset_calibration_button_style()
+
+    def _blink_calibration_button(self):
+        """Toggle calibration button appearance for blinking effect"""
+        if not self.drift_detected or not self.calibrate_button.isEnabled():
+            self._stop_calibration_button_blink()
+            return
+
+        self.drift_blink_state = not self.drift_blink_state
+
+        if self.drift_blink_state:
+            # Highlighted state - orange/red to indicate attention needed
+            self.calibrate_button.setStyleSheet("""
+                QPushButton[accessibleName="calibrate"] {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                        stop:0 #ff9800, stop:1 #f57c00);
+                    border: 2px solid #ffb74d;
+                    box-shadow: 0 0 10px rgba(255, 152, 0, 0.6);
+                }
+            """)
+        else:
+            # Normal state
+            self._reset_calibration_button_style()
+
+    def _reset_calibration_button_style(self):
+        """Reset calibration button to normal style"""
+        self.calibrate_button.setStyleSheet("""
+            QPushButton[accessibleName="calibrate"] {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #607d8b, stop:1 #455a64);
+            }
+            QPushButton[accessibleName="calibrate"]:hover {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #78909c, stop:1 #607d8b);
+            }
+        """)
+
+    def _update_drift_warning_color(self, severity):
+        """Update drift warning color based on severity"""
+        if severity == 'mild':
+            color = '#ffeb3b'  # Yellow
+            bg_color = 'rgba(255, 235, 59, 0.15)'
+        elif severity == 'moderate':
+            color = '#ff9800'  # Orange
+            bg_color = 'rgba(255, 152, 0, 0.15)'
+        elif severity == 'severe':
+            color = '#f44336'  # Red
+            bg_color = 'rgba(244, 67, 54, 0.15)'
+        else:
+            color = '#ff9800'  # Default orange
+            bg_color = 'rgba(255, 152, 0, 0.15)'
+
+        self.drift_warning_label.setStyleSheet(f"""
+            QLabel {{
+                background-color: {bg_color};
+                border: 2px solid {color};
+                border-radius: 8px;
+                padding: 8px;
+                color: {color};
+                margin: 4px;
+            }}
+        """)
+
+    def _test_drift_detection(self):
+        """Test method to manually trigger drift detection (for testing purposes)"""
+        # Simulate drift detection for testing
+        test_drift_info = {
+            'has_drift': True,
+            'drift_axes': ['Left X', 'Right Y'],
+            'severity': 'moderate'
+        }
+
+        self.on_drift_detected(test_drift_info)
+        self.append_log("[TEST] Drift detection test triggered manually.")
