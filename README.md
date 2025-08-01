@@ -133,9 +133,9 @@ Get the latest stable release from any of the following platforms:
 | PS Button       | Guide        | Xbox Home     |
 
 ---
-</div>
 
 ## 💾 Project Structure
+</div>
 
 ```
 LazyDS4/
@@ -158,6 +158,7 @@ LazyDS4/
 └── requirements.txt           # Python dependencies
 ```
 <div align="center">
+  
 ---
 
 ## 📋 System Requirements
