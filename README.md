@@ -15,6 +15,9 @@ _"Transform your DualShock 4 into a native Xbox 360 controller"_
 
 ---
 
+https://youtu.be/aLHNKTKF1G8
+
+---
 ## 🧩 Description
 
 **LazyDS4** is a controller mapping application designed to convert HID input from a DualShock 4 controller directly to a virtual Xbox 360 controller. Optimized for simplicity and performance, it offers real-time input mapping with a ~1ms (1000Hz) polling rate, modern graphical interface with PyQt5, and automatic joystick calibration.
