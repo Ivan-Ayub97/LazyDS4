@@ -27,7 +27,7 @@ Get the latest stable release from any of the following platforms:
       </a>
     </td>
     <td align="center" width="33%">
-      <a href="https://github.com/Ivan-Ayub97/LazyDS4/releases/download/v1.0.0/LazyDS41.0.0Setup.zip">
+      <a href="https://github.com/Ivan-Ayub97/LazyDS4/releases/download/v2.0.0/LazyDS42.0.0Setup.zip">
         <img src="rsc/GitHub_Lockup_Light.png" alt="Download from GitHub" width="200" />
       </a>
     </td>
