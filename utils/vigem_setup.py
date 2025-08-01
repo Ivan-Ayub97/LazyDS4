@@ -104,8 +104,8 @@ class ViGEmSetup:
             
         return None
     
-    def install_vigem(self, silent=True):
-        """Install ViGEmBus driver"""
+    def install_vigem(self, silent=False):
+        """Install ViGEmBus driver with proper UI and admin privileges"""
         installer_path = self.get_installer_path()
         
         if not installer_path:
@@ -113,28 +113,78 @@ class ViGEmSetup:
         
         self.logger.info(f"Installing ViGEmBus from: {installer_path}")
         
-        # Check if it's an .exe or .msi installer
-        if installer_path.suffix.lower() == '.exe':
-            # Build command for .exe installer
-            cmd = [str(installer_path)]
-            if silent:
-                cmd.append("/S")  # Silent installation for NSIS installer
-        else:
-            # Build msiexec command for .msi installer
-            cmd = ["msiexec", "/i", str(installer_path)]
-            if silent:
-                cmd.extend(["/quiet", "/norestart"])
-        
         try:
-            # Run the installer with elevated privileges
-            result = subprocess.run(cmd, check=True, capture_output=True, text=True)
-            self.logger.info("ViGEmBus installation completed successfully")
-            return True
-        except subprocess.CalledProcessError as e:
-            self.logger.error(f"ViGEmBus installation failed: {e}")
-            self.logger.error(f"Command output: {e.stdout}")
-            self.logger.error(f"Command error: {e.stderr}")
-            return False
+            import ctypes
+            import ctypes.wintypes as wintypes
+            
+            # Check if we're already running as administrator
+            try:
+                is_admin = ctypes.windll.shell32.IsUserAnAdmin()
+            except:
+                is_admin = False
+            
+            if not is_admin:
+                self.logger.info("Requesting administrator privileges for ViGEmBus installation...")
+                # Use ShellExecute with "runas" to request admin privileges
+                result = ctypes.windll.shell32.ShellExecuteW(
+                    None,
+                    "runas",  # Request elevation
+                    str(installer_path),
+                    "",  # No parameters - show the full installer UI
+                    str(installer_path.parent),  # Working directory
+                    1  # SW_SHOWNORMAL - Show the installer window
+                )
+                
+                # ShellExecute returns > 32 for success
+                if result > 32:
+                    self.logger.info("ViGEmBus installer launched with admin privileges. Please follow the on-screen instructions.")
+                    return True
+                else:
+                    error_codes = {
+                        0: "Out of memory or resources",
+                        2: "File not found",
+                        3: "Path not found",
+                        5: "Access denied",
+                        8: "Out of memory",
+                        26: "Sharing violation",
+                        27: "File association incomplete",
+                        29: "DDE transaction failed",
+                        30: "DDE transaction timed out",
+                        31: "No application associated"
+                    }
+                    error_msg = error_codes.get(result, f"Unknown error (code {result})")
+                    self.logger.error(f"Failed to launch installer: {error_msg}")
+                    return False
+            else:
+                # We're already admin, run directly
+                self.logger.info("Running as administrator, launching installer directly...")
+                if installer_path.suffix.lower() == '.exe':
+                    # For .exe files, run without silent mode to show the UI
+                    result = subprocess.run(
+                        [str(installer_path)],
+                        check=False,  # Don't raise exception on non-zero exit
+                        creationflags=subprocess.CREATE_NO_WINDOW if silent else 0
+                    )
+                    if result.returncode == 0:
+                        self.logger.info("ViGEmBus installation completed successfully")
+                        return True
+                    else:
+                        self.logger.warning(f"Installer exited with code {result.returncode}")
+                        return False
+                else:
+                    # For MSI files
+                    cmd = ["msiexec", "/i", str(installer_path)]
+                    if silent:
+                        cmd.extend(["/quiet", "/norestart"])
+                    
+                    result = subprocess.run(cmd, check=False)
+                    if result.returncode == 0:
+                        self.logger.info("ViGEmBus installation completed successfully")
+                        return True
+                    else:
+                        self.logger.warning(f"MSI installer exited with code {result.returncode}")
+                        return False
+                
         except Exception as e:
             self.logger.error(f"Unexpected error during installation: {e}")
             return False

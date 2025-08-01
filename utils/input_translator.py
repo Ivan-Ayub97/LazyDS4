@@ -21,6 +21,8 @@ class InputTranslator(QObject):
     calibration_started = pyqtSignal()
     calibration_finished = pyqtSignal(dict)
     calibration_updated = pyqtSignal(dict) # For real-time UI updates
+    joystick_data_updated = pyqtSignal(dict) # For real-time joystick visualization
+    drift_detected = pyqtSignal(dict) # Signal when drift is detected: {'has_drift': bool, 'drift_axes': list}
 
     def __init__(self):
         super().__init__()
@@ -40,6 +42,19 @@ class InputTranslator(QObject):
             'rx': 3000,
             'ry': 3000
         }
+        
+        # Drift detection system
+        self.drift_detection_enabled = True
+        self.drift_sample_count = 0
+        self.drift_samples = {
+            'lx': [],
+            'ly': [],
+            'rx': [],
+            'ry': []
+        }
+        self.drift_detected_axes = set()
+        self.last_drift_check = 0
+        self.drift_check_performed = False
 
     def start_calibration(self):
         """Starts the stick calibration process"""
@@ -83,6 +98,14 @@ class InputTranslator(QObject):
         
         # Emit signal for real-time UI update
         self.calibration_updated.emit(self.calibration_data)
+        
+        # Emit real-time joystick data for visualization
+        joystick_data = {'lx': lx, 'ly': ly, 'rx': rx, 'ry': ry}
+        self.joystick_data_updated.emit(joystick_data)
+        
+        # Check for drift during normal operation (not calibration)
+        if not self.is_calibrating:
+            self._check_for_drift(hid_report)
 
     def translate(self, hid_report):
         """Translate a single HID report to an XInput report and extract battery"""
@@ -138,45 +161,78 @@ class InputTranslator(QObject):
         if misc_buttons & 0x20: self.xinput_report.wButtons |= 0x0010  # START (Options)
         if misc_buttons & 0x40: self.xinput_report.wButtons |= 0x0040  # LEFT_THUMB
         if misc_buttons & 0x80: self.xinput_report.wButtons |= 0x0080  # RIGHT_THUMB
+        
+        # Check for drift (only if not already performed)
+        if self.drift_detection_enabled and not self.drift_check_performed:
+            self._check_for_drift(hid_report)
             
         return self.xinput_report
 
     def _normalize_stick(self, value, axis, invert=False):
-        """Convert 8-bit stick value to 16-bit signed with calibration"""
+        """Complex calibration to mitigate joystick drift and provide smooth movement"""
         calib = self.calibration_data[axis]
-        center = 128  # Use a fixed, theoretical center
+        center = calib.get('center', 128)
         min_val = calib.get('min', 0)
         max_val = calib.get('max', 255)
 
-        # Define the negative and positive range from the center
+        # Use the calibrated center, min, and max to create a dynamic range
         neg_range = center - min_val
         pos_range = max_val - center
 
-        # Avoid division by zero if calibration data is incomplete
-        if neg_range == 0:
-            neg_range = 128
-        if pos_range == 0:
-            pos_range = 127
-            
-        scaled = 0
+        # Avoid division by zero
+        neg_range = max(neg_range, 1)
+        pos_range = max(pos_range, 1)
+
+        # Normalize to a 16-bit signed integer range
         if value > center:
-            scaled = ((value - center) / pos_range) * 32767.0
+            scaled = ((value - center) / pos_range) * 32767
         elif value < center:
-            # Note: value - center is negative, so the result is negative
-            scaled = ((value - center) / neg_range) * 32768.0
-        
-        # Apply a fixed deadzone to the scaled value
-        deadzone = 4000  # A reasonable deadzone for most controllers
-        if abs(scaled) < deadzone:
+            scaled = ((value - center) / neg_range) * 32767
+        else:
             scaled = 0
-        
-        # Clamp the values to the 16-bit signed integer range
+
+        # Implement adaptive deadzone to smooth out drift
+        adaptive_deadzone = max(4000, 2000 * (abs(value - center) / max(neg_range, pos_range)))
+        if abs(scaled) < adaptive_deadzone:
+            scaled = 0
+
+        # Clamp to the 16-bit integer
         final_value = int(max(-32767, min(32767, scaled)))
-        
-        if invert:
-            return -final_value
-        
-        return final_value
+
+        return -final_value if invert else final_value
+
+    def draw_joystick(self, painter, joystick_pos, radius=50):
+        """Draw a simple representation of a joystick in a given position."""
+        painter.save()
+
+        # Set pen and brush
+        pen = QPen(QColor(70, 70, 70), 2)
+        brush = QBrush(QColor(180, 180, 180))
+        painter.setPen(pen)
+        painter.setBrush(brush)
+
+        # Calculate center of joystick
+        center_x = joystick_pos.x() + radius
+        center_y = joystick_pos.y() + radius
+
+        # Draw outer circle for base
+        painter.drawEllipse(QPoint(center_x, center_y), radius, radius)
+
+        # Draw inner circle for stick
+        stick_radius = max(5, radius // 5)
+        painter.setBrush(QBrush(QColor(100, 100, 100)))
+        painter.drawEllipse(QPoint(center_x, center_y), stick_radius, stick_radius)
+
+        painter.restore()
+    
+    def draw_virtual_controller(self, painter, joystick_positions):
+        """Draw the virtual controller on the widget."""
+        # Left joystick
+        self.draw_joystick(painter, joystick_positions['left'], radius=50)
+
+        # Right joystick
+        self.draw_joystick(painter, joystick_positions['right'], radius=50)
+
     
     def _extract_battery_info(self, hid_report):
         """Extract battery information from DS4 HID report"""
@@ -222,3 +278,105 @@ class InputTranslator(QObject):
         except (IndexError, ValueError) as e:
             # On error, emit safe default values
             self.battery_status_updated.emit(0, False)
+    
+    def _check_for_drift(self, hid_report):
+        """Robust drift detection system that samples stick positions when idle"""
+        if not hid_report or len(hid_report) < 5:
+            return
+            
+        current_time = time.time()
+        
+        # Only check for drift every 0.1 seconds to avoid overwhelming
+        if current_time - self.last_drift_check < 0.1:
+            return
+            
+        self.last_drift_check = current_time
+        
+        # Extract stick values
+        lx, ly, rx, ry = hid_report[1], hid_report[2], hid_report[3], hid_report[4]
+        current_values = {'lx': lx, 'ly': ly, 'rx': rx, 'ry': ry}
+        
+        # Check if any buttons are pressed (if so, user is active, skip drift detection)
+        buttons_pressed = hid_report[5] != 0 or hid_report[6] != 0
+        triggers_pressed = hid_report[8] > 10 or hid_report[9] > 10  # Small threshold for triggers
+        
+        if buttons_pressed or triggers_pressed:
+            # User is active, reset sampling
+            self.drift_sample_count = 0
+            for axis in self.drift_samples:
+                self.drift_samples[axis].clear()
+            return
+            
+        # Collect samples when controller appears idle
+        for axis, value in current_values.items():
+            self.drift_samples[axis].append(value)
+            
+        self.drift_sample_count += 1
+        
+        # After collecting enough samples (3 seconds at ~10Hz = 30 samples), analyze for drift
+        if self.drift_sample_count >= 30:
+            self._analyze_drift_samples()
+            self.drift_check_performed = True
+            
+    def _analyze_drift_samples(self):
+        """Analyze collected samples to determine if drift exists"""
+        drift_axes = []
+        axis_names = {'lx': 'Left X', 'ly': 'Left Y', 'rx': 'Right X', 'ry': 'Right Y'}
+        
+        for axis, samples in self.drift_samples.items():
+            if len(samples) < 10:  # Need minimum samples
+                continue
+                
+            # Calculate statistics
+            avg_value = sum(samples) / len(samples)
+            min_value = min(samples)
+            max_value = max(samples)
+            range_value = max_value - min_value
+            
+            # Expected center value for DS4 sticks
+            expected_center = 128
+            
+            # Drift detection criteria:
+            # 1. Average value significantly off from center (more than 8 units)
+            # 2. OR consistent deviation in one direction
+            # 3. AND the range is small (indicating consistent offset, not just noise)
+            
+            center_deviation = abs(avg_value - expected_center)
+            is_consistently_off = center_deviation > 8  # More than ~3% off center
+            is_stable = range_value < 6  # Values don't vary much (stable drift)
+            
+            # Additional check: ensure most samples are on the same side of center
+            samples_above_center = sum(1 for s in samples if s > expected_center)
+            samples_below_center = sum(1 for s in samples if s < expected_center)
+            is_consistent_direction = max(samples_above_center, samples_below_center) > len(samples) * 0.8
+            
+            # Detect drift if consistently off-center and stable
+            if is_consistently_off and (is_stable or is_consistent_direction):
+                drift_axes.append(axis_names[axis])
+                self.drift_detected_axes.add(axis)
+                
+        # Emit drift detection signal
+        has_drift = len(drift_axes) > 0
+        drift_info = {
+            'has_drift': has_drift,
+            'drift_axes': drift_axes,
+            'severity': self._calculate_drift_severity() if has_drift else 'none'
+        }
+        
+        self.drift_detected.emit(drift_info)
+        
+        # Clear samples after analysis
+        for axis in self.drift_samples:
+            self.drift_samples[axis].clear()
+        self.drift_sample_count = 0
+        
+    def _calculate_drift_severity(self):
+        """Calculate overall drift severity"""
+        if len(self.drift_detected_axes) == 0:
+            return 'none'
+        elif len(self.drift_detected_axes) == 1:
+            return 'mild'
+        elif len(self.drift_detected_axes) == 2:
+            return 'moderate'
+        else:
+            return 'severe'
