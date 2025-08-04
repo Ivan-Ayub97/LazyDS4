@@ -203,18 +203,26 @@ class ViGEmSetup:
         try:
             success = self.install_vigem(silent=True)
             if success:
-                # Wait a moment for the driver to be ready
-                time.sleep(2)
+                # Wait and monitor for installation completion
+                self.logger.info("Monitoring installation progress...")
                 
-                # Test if the installation was successful
-                if self.is_vigem_installed(test_functionality=True):
-                    self.logger.info("ViGEmBus installation completed and verified")
+                # Wait for installation to complete (up to 60 seconds)
+                for i in range(12):  # 12 * 5 seconds = 60 seconds max wait
+                    time.sleep(5)
+                    if self.is_vigem_installed(test_functionality=True):
+                        self.logger.info("ViGEmBus installation completed and verified successfully")
+                        return True
+                    self.logger.info(f"Installation in progress... ({(i+1)*5}s elapsed)")
+                
+                # Final check after timeout
+                if self.is_vigem_installed(test_functionality=False):
+                    self.logger.info("ViGEmBus driver files detected - installation appears successful")
                     return True
                 else:
-                    self.logger.warning("ViGEmBus installation completed but functionality test failed")
+                    self.logger.warning("ViGEmBus installation timeout - driver may still be installing")
                     return False
             else:
-                self.logger.error("ViGEmBus installation failed")
+                self.logger.error("ViGEmBus installation failed to launch")
                 return False
         except Exception as e:
             self.logger.error(f"Error during ViGEmBus setup: {e}")
