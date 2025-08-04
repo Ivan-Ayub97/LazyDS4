@@ -27,7 +27,7 @@ Get the latest stable release from any of the following platforms:
       </a>
     </td>
     <td align="center" width="33%">
-      <a href="https://github.com/Ivan-Ayub97/LazyDS4/releases/download/v2.0.0/LazyDS42.0.0Setup.zip">
+      <a href="https://github.com/Ivan-Ayub97/LazyDS4/releases/download/v2.1.0/LazyDS42.1.0Setup.zip">
         <img src="rsc/GitHub_Lockup_Light.png" alt="Download from GitHub" width="200" />
       </a>
     </td>
@@ -36,7 +36,7 @@ Get the latest stable release from any of the following platforms:
 
 ### Quick Installation
 
-1. Download the installer `LazyDS4-2.0.0-Installer.exe`
+1. Download the installer `LazyDS4-2.1.0-Installer.exe`
 2. Run as administrator (required for ViGEmBus)
 3. Installer will automatically setup ViGEmBus driver
 4. Launch LazyDS4 from start menu or shortcut
@@ -84,14 +84,14 @@ Get the latest stable release from any of the following platforms:
 
 ---
 
-## 📌 What's New (v2.0.0)
+## 📌 What's New (v2.1.0)
 
-- 🆕 **Intelligent Drift Detection** — Automatic detection of joystick drift with visual warnings
-- 🎯 **Enhanced Calibration System** — Improved calibration with adaptive deadzone and complex algorithms
-- 🔔 **Smart Drift Alerts** — Color-coded severity indicators and blinking calibration button
-- 📊 **Real-time Joystick Visualization** — Enhanced visual feedback during calibration
-- 🧠 **Advanced Drift Analysis** — Multi-axis drift detection with severity classification
-- ⚡ **Improved Input Processing** — Better normalization and smoother controller response
+- 🎨 **Visual Overhaul** — Modern, professional interface with gradient backgrounds and advanced styling
+- 📐 **Layout Optimization** — Improved spacing, alignment, and responsiveness
+- 🎉 **Icon Integration** — Consistent use of dynamic SVG icons throughout
+- ⚡ **Enhanced Button Design** — Polished buttons with smooth animations and clear actions
+- 📊 **Responsive Interface** — Adapted for various screen sizes without overlaps
+- 🔔 **Real-time Visual Indicators** — Clear and immediate feedback for status, warnings, and battery levels
 
 ---
 
