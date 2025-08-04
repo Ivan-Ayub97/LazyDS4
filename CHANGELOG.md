@@ -1,3 +1,49 @@
+## Version 2.1.0
+
+**Release date:** 3 August 2025
+
+### 1. User Interface Improvements
+
+#### 1.1 **Premium Visual Design Overhaul**
+
+- **Description**: Complete visual redesign with professional-grade styling including multi-layered shadows, premium color schemes, and sophisticated gradient backgrounds
+- **Implementation**: Enhanced CSS styling throughout all UI components with advanced visual effects
+- **Impact**: Significantly improved user experience with a modern, polished interface that rivals commercial gaming software
+
+#### 1.2 **SVG Icon Integration System**
+
+- **Description**: Comprehensive integration of dynamic SVG icons throughout the interface for intuitive navigation and enhanced visual appeal
+- **Implementation**: Strategic placement of icons from the assets folder (check-circle.svg, bluetooth.svg, settings.svg, etc.) across buttons and UI elements
+- **Impact**: Improved visual clarity and professional appearance with consistent iconography
+
+#### 1.3 **Responsive Layout Optimization**
+
+- **Description**: Complete layout restructuring with improved spacing, alignment, and grid-based organization for better content presentation
+- **Implementation**: Optimized window dimensions (1000x750), enhanced padding/margins, and flexible responsive design
+- **Impact**: Eliminated overlapping elements and improved usability across different screen sizes
+
+### 2. Enhanced User Experience
+
+#### 2.1 **Advanced Button Design System**
+
+- **Description**: Professional button styling with smooth hover animations, multi-layered shadow effects, and color-coded actions
+- **Implementation**: Enhanced CSS with gradient backgrounds, lift animations, and improved pressed states
+- **Impact**: More intuitive interface with clear visual feedback for user interactions
+
+#### 2.2 **Real-time Visual Status Indicators**
+
+- **Description**: Improved display of connection status, battery levels, and system notifications with immediate visual feedback
+- **Implementation**: Enhanced status widgets with color-coded indicators and animated elements
+- **Impact**: Better user awareness of system state and controller status
+
+#### 2.3 **Modern Header Component**
+
+- **Description**: Custom header widget with animated elements and professional branding
+- **Implementation**: ModernHeaderWidget with real-time status updates and pulsing activity indicators
+- **Impact**: Enhanced brand identity and improved visual hierarchy
+
+---
+
 ## Version 2.0.0
 
 **Release date:** 1 August 2025
