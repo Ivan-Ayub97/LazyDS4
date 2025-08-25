@@ -55,17 +55,17 @@ Get the latest stable release from any of the following platforms:
 
 ### 🧪 Other Views
 
-![Screenshot](rsc/Capture2.png)
-
 - **Log Tab**: Detailed event and error logging
 
-![Screenshot](rsc/Capture3.png)
+![Screenshot](rsc/Capture2.png)
 
 - **Info Tab**: Developer information, button mapping, and utilities
 
-![Screenshot](rsc/Capture4.gif)
+![Screenshot](rsc/Capture3.png)
 
 - **Calibration Dialog**: Interactive tool to adjust joysticks
+
+![Screenshot](rsc/Capture4.gif)
 
 ---
 
