@@ -8,9 +8,10 @@
 [![Version](https://img.shields.io/badge/Version-v2.1.0-darkred?style=for-the-badge)](#)
 [![License](https://img.shields.io/badge/License-MIT-purple?style=for-the-badge)](LICENSE)
 [![Downloads](https://img.shields.io/github/downloads/Ivan-Ayub97/LazyDS4/total?style=for-the-badge&color=gold)](https://github.com/Ivan-Ayub97/LazyDS4/releases)
+[![Last Commit](https://img.shields.io/github/last-commit/Ivan-Ayub97/LazyDS4?style=for-the-badge&color=2E8B57&logo=git&logoColor=white)](https://github.com/Ivan-Ayub97/LazyDS4/commits/main)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](#)
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=FFD700)](https://www.python.org/)
-[![Last Commit](https://img.shields.io/github/last-commit/Ivan-Ayub97/LazyDS4?style=for-the-badge&color=2E8B57&logo=git&logoColor=white)](https://github.com/Ivan-Ayub97/LazyDS4/commits/main)
+[![Issues](https://img.shields.io/github/issues/Ivan-Ayub97/LazyDS4?style=for-the-badge&color=FF4500&logo=github&logoColor=white)](https://github.com/Ivan-Ayub97/LazyDS4/issues)
 
 _"Transform your DualShock 4 into a native Xbox 360 controller"_
 
