@@ -48,10 +48,11 @@ UninstallDisplayName={#AppName}
 ShowLanguageDialog=no
 
 ; Version info
-VersionInfoVersion={#AppVersion}
+VersionInfoVersion=2.1
+VersionInfoTextVersion=2.1r1
 VersionInfoCompany={#AppPublisher}
 VersionInfoDescription={#AppName} Setup
-VersionInfoCopyright=Copyright © 2024 {#AppPublisher}
+VersionInfoCopyright=Copyright © 2025 {#AppPublisher}
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"; LicenseFile: "License.txt"
