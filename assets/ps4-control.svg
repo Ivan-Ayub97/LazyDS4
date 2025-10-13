@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1000 600"
+     width="1000" height="600">
+
+  <!-- CONTROLLER BODY -->
+  <g id="controller-body" fill="#2b2b2b" stroke="#000" stroke-width="4">
+    <path d="M200,250
+             C150,100, 350,50, 420,150
+             H580
+             C650,50, 850,100, 800,250
+             L800,380
+             C850,500, 650,550, 580,460
+             H420
+             C350,550, 150,500, 200,380 Z"/>
+  </g>
+
+  <!-- LIGHTBAR -->
+  <rect id="lightbar" x="420" y="90" width="160" height="30"
+        rx="15" ry="15" fill="#1e90ff" opacity="0.7"/>
+
+  <!-- TOUCHPAD -->
+  <rect id="touchpad" x="370" y="130" width="260" height="120"
+        rx="20" ry="20" fill="#3a3a3a" stroke="#111" stroke-width="3"/>
+
+  <!-- D-PAD -->
+  <g id="dpad" fill="#1c1c1c" stroke="#000" stroke-width="2">
+    <rect id="dpad-up"    x="250" y="210" width="50" height="50" rx="10"/>
+    <rect id="dpad-left"  x="200" y="260" width="50" height="50" rx="10"/>
+    <rect id="dpad-down"  x="250" y="310" width="50" height="50" rx="10"/>
+    <rect id="dpad-right" x="300" y="260" width="50" height="50" rx="10"/>
+  </g>
+
+  <!-- FACE BUTTONS -->
+  <g id="face-buttons" fill="#1a1a1a" stroke="#000" stroke-width="2">
+    <circle id="button-triangle" cx="750" cy="210" r="28" fill="#4CAF50"/>
+    <circle id="button-circle"   cx="790" cy="260" r="28" fill="#F44336"/>
+    <circle id="button-cross"    cx="750" cy="310" r="28" fill="#2196F3"/>
+    <circle id="button-square"   cx="710" cy="260" r="28" fill="#9C27B0"/>
+  </g>
+
+  <!-- STICKS -->
+  <g id="sticks" stroke="#000" stroke-width="3">
+    <circle id="stick-left"  cx="350" cy="380" r="55" fill="#2d2d2d"/>
+    <circle id="stick-right" cx="650" cy="380" r="55" fill="#2d2d2d"/>
+  </g>
+
+  <!-- PS BUTTON -->
+  <circle id="ps-button" cx="500" cy="360" r="25" fill="#555" stroke="#000" stroke-width="3"/>
+
+  <!-- OPTIONS & SHARE -->
+  <g id="menu-buttons" fill="#444" stroke="#000" stroke-width="2">
+    <rect id="button-share"   x="340" y="120" width="40" height="25" rx="6"/>
+    <rect id="button-options" x="620" y="120" width="40" height="25" rx="6"/>
+  </g>
+
+  <!-- TRIGGERS -->
+  <g id="triggers" fill="#1c1c1c" stroke="#000" stroke-width="3">
+    <path id="trigger-l1" d="M250,100 h120 v30 h-120 q-10,0 -10,-15 q0,-15 10,-15z"/>
+    <path id="trigger-r1" d="M630,100 h120 v30 h-120 q-10,0 -10,-15 q0,-15 10,-15z"/>
+    <path id="trigger-l2" d="M250,60 h120 v30 h-120 q-15,0 -15,-15 q0,-15 15,-15z"/>
+    <path id="trigger-r2" d="M630,60 h120 v30 h-120 q-15,0 -15,-15 q0,-15 15,-15z"/>
+  </g>
+
+</svg>
